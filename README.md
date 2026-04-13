@@ -10,4 +10,4 @@
 * Information Theory Simulations
 
 * The Platonic Representation Hypothesis
-* LLM Encoder
+    * LLM Encoder
