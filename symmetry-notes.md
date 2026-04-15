@@ -1273,3 +1273,272 @@ Yes, selectively. The core idea — causal states as equivalence classes under i
 **Suggested approach:** Read the Shalizi-Crutchfield 2001 paper's first third, which develops the causal state construction and $\epsilon$-machine definition clearly. The 2001 paper supersedes the 1989 paper for conceptual clarity.
 
 The most productive lens, given the framework developed here, is to ask: what is the analog of the symmetry group $G$ for a stochastic process, and can the causal state equivalence relation be derived from a group-theoretic structure analogous to $G/H$? That question is not answered in the papers but is the natural bridge between their framework and the one developed in these notes.
+
+# Prompt
+
+Please comment on the following and help me flesh out my confusions and interest by commenting on the following and asking probing questions to help form a comprehensive question or thesis which I will want to research: When we talk about physical symmetries of systems and objects in theoretical physics, these are transformations on the system that leave some aspect of its state unchanged (whether that be the total energy or the dynamics, etc). So these symmetries (the actual transformations) are degrees of freedom that the system does not care about; they don't matter to the system. What is implicit in this is the fact that there is some universal set of transformations on the system that exists and the symmetry group is a subset of; this universal set is all of the possible things that the system can do - this relates to the state space of the system. For a lot of simple physical systems this is probably a fairly trivial thing - its not difficult to know what are all the possible transformations that one can apply on the system, and the interesting physics arises as a result of which of these transformations are actually a symmetry. 
+
+one question I have is about some sort of method of reconstructing or deriving the symmetry group of a system purely from data about its states or how it transforms. So say I have some physical system (take a sphere) that I have numerically simulated (but I don't know it's a sphere myself). How can I randomly apply an ensemble of all possible physical transformations that are possible on the sphere (so I guess this is just position and momentum changes) and look at data about the sphere's final state, and see in that data that the system is a sphere and thus "derive" its O(3) symmetry group? Say the sphere is actually electrically charged, it that is necessary. So in short, how do the enumerated states of an object relate to its symmetry group? Are these methods used in more advanced physics, like at CERN?
+What if we have a system that has so many degrees of freedom that we cannot know the "universal" set of transformations that are possible to apply onto it - a system so complicated that we don't even know how it transforms, and we want to reverse the question from finding the symmetries, to instead finding the transformations that the system is NOT symmetric to? I don't know any physical system that is a clear example of this, but think about a certain human being operating in the world: all the time the state of the world is changing and MOST of the changes that are happening are not directly impacting this human people. This person's state is invariant to most of these transformations. But if we wanted to characterize this person, we could do so by characterizing what DOES matter to them (what transformations of the world's state are they NOT invariant to?). We cannot possibly know how to simulate all of the transformations happening on the world (the universal set), so how can we get information about the way that this person DOES transform. So to clarify, the symmetry group of an object is the group of transformations on an object that it is invariant under. I am more looking for the person's "non-symmetry group" (I know it is unlikely that this is rigorously a group, but this is just the concept). In most mathematical or physical cases, a symmetry group (like say S_4, the transformations on a square) lives inside of a much larger universal set of other things you could do to the square (translations, rotations, deformations, etc). But what I am postulating is that in a complex dynamical system like a person living in the world, the reverse is true: the set of symmetries is actually larger than the set of non-symmetries, because most transformations dont directly impact the person
+
+# Notes
+
+## Notes: Symmetry, Non-Symmetry, and Complex Systems
+
+## Core Framework
+
+Physical symmetries are transformations on a system that leave some observable unchanged (energy, dynamics, etc.). These symmetries are degrees of freedom the system "doesn't care about." Implicit in this is that the symmetry group is always a *subset* of some universal set of all possible transformations on the system. For simple physical systems, this universal set is typically easy to characterize, and the interesting physics comes from identifying which transformations within it are actually symmetries.
+
+**Key point:** The symmetry group is always *relative to a choice of observable* — what counts as "unchanged" determines what counts as a symmetry. A sphere has O(3) symmetry with respect to its geometry, but painting a dot on it breaks that to a stabilizer subgroup; placing it in an external field breaks it further.
+
+---
+
+## Question 1: Symmetry Discovery from Data
+
+**Problem:** Given data about a system's states (without knowing the system's identity), can one reconstruct the symmetry group? E.g., given a numerically simulated sphere (without knowing it's a sphere), apply an ensemble of transformations, observe which leave observables unchanged, and derive O(3).
+
+For a rigid body in 3D, the ambient group of all possible transformations is something like the full diffeomorphism group or GL(3,ℝ), and one looks for the subgroup preserving the object's geometric properties. For a sphere, that subgroup is O(3). But you need some structure — a notion of what observable you're checking invariance of — to make the question well-posed.
+
+### Existing approaches
+
+- **AI Physicist / AI Feynman (Tegmark et al., MIT):** Feed neural networks input-output data from physical systems to discover symbolic expressions — conservation laws, equations of motion. Conservation laws are invariants under time evolution, so this is a special case of symmetry discovery.
+- **Unsupervised symmetry discovery (Robin Winter, Sohyun Park, et al., "Unsupervised Discovery of Group-Theoretic Symmetries"):** Learn both a set of transformations and a function of the data simultaneously, where the transformations leave the learned function invariant. Both the group and the invariant are discovered jointly.
+- **Equivariant representation learning:** Learn latent representations that factorize into parts transforming in known ways under group actions. The more ambitious version learns the group structure itself.
+- **Topological data analysis:** Persistent homology and related tools identify structural features (holes, clusters, voids) invariant under continuous deformations — discovered invariants, though not symmetry groups in the traditional sense.
+- **Disentangled representation learning (e.g., β-VAEs):** Learn latent variables that independently capture distinct factors of variation in the data. If data comes from a physical system, factors of variation correspond to the *non-invariant* directions, and the invariant directions are what the representation collapses. So these methods find invariants by finding what *doesn't* matter for reconstructing the data.
+- **Experimental physics (CERN):** Physicists typically *assume* symmetry groups (Lorentz invariance, gauge symmetries) and look for violations or new symmetries in collision data, rather than discovering them from scratch. But there are recent efforts using machine learning to discover conservation laws and symmetries directly from simulation data.
+
+### The observable-dependence problem
+
+An algorithm searching for invariants faces an underdetermined problem: infinitely many functions are invariant under infinitely many transformation sets. Selection criteria used in practice include simplicity/compressibility, generalization to unseen data, and disentanglement. These criteria are essentially priors encoding assumptions about what makes an invariant "real."
+
+### Key open problems
+
+- **Degeneracy:** The radius of a sphere, the radius cubed, and any function of the radius are all O(3)-invariant. What selects the "natural" invariant? Possibly minimality in some information-theoretic sense.
+- **Joint discovery (chicken-and-egg):** The invariant determines which transformations are symmetries, and the symmetry group determines which functions are invariants. Successful methods must break this circularity — via alternating optimization or a global objective.
+- **Spectrum vs. group:** Knowing equivalence classes (orbits) doesn't uniquely reconstruct the group. Multiple groups can produce the same orbit structure.
+- **Representation-theoretic framing:** When a group acts on a space, the space decomposes into irreducible representations. The invariants are the trivial representation component; the interesting physics lives in the non-trivial representations. Framing the discovery problem as "given data, discover the natural decomposition into irreducible representations of some unknown group" would be a precise mathematical formulation of "finding what to care about" — the irreducible representations tell you both the symmetries and the natural basis of non-symmetric variation.
+- **Role of dynamics:** In physics, the most important invariants are those preserved by the *physical dynamics* (Noether's theorem connects symmetries of the Lagrangian to conservation laws). Restricting to invariants under time evolution specifically, rather than arbitrary transformations, may make the problem better-posed and connects directly to the Noether framework as a natural selection criterion for which invariants matter.
+
+---
+
+## Question 2: The "Non-Symmetry Structure" of Complex Systems
+
+**Core idea:** For simple systems, the universal transformation set is manageable and the symmetry subgroup is interesting. For complex systems (e.g., a person embedded in the world), this inverts: the universal set is incomprehensibly large, the symmetry set is *also* enormous (most world-changes don't affect the person), and the small structured set worth characterizing is the *complement* — the transformations the system is NOT invariant to.
+
+**Key postulate:** In complex dynamical systems, the set of symmetries is *larger* than the set of non-symmetries, because most transformations don't directly impact the system. This inverts the usual physics setup.
+
+### Why the "non-symmetry set" is not a group
+
+If transformation A affects the person and transformation B affects the person, their composition might not (they could cancel), or might affect in an unrelated way. Closure fails. What you likely have is a *set of relevant perturbations* or a *sensitivity structure* — a map from transformations to response magnitudes.
+
+### Connections to existing frameworks
+
+- **Linear response theory (stat mech):** Characterize a system by its susceptibilities — how it responds to small perturbations. No need to enumerate all perturbations; the response kernel suffices.
+- **Information theory:** The non-symmetry set is roughly the *support of the mutual information* between world-state changes and the person's state.
+- **Category theory / topos theory:** "Generalized elements" or "probes" of an object that reveal its structure — characterizing something by what affects it.
+
+### Critical distinction: physics vs. epistemology
+
+The power of symmetry in physics comes from mathematical precision in the state space and group action. Extending this to complex systems requires confronting what it means to have *approximate* or *effective* symmetry, and what structure the non-symmetry set actually has.
+
+### Open questions
+
+- **Approximation:** In complex systems, almost nothing is an exact symmetry or exact non-symmetry. The framework needs a notion of *approximate symmetry* (response < ε), making the symmetry "group" a fuzzy object depending on tolerance.
+- **Resolution dependence:** A person is invariant to a butterfly in Brazil at coarse resolution, but not at the level of air molecules hitting skin. The framework likely needs a coarse-graining or renormalization step — the non-symmetry set depends on the level of description.
+- **What algebraic structure does the non-symmetry set have?** It's not a group, but could it be a *cone* (if A matters, stronger-A also matters)? A *filter* in some order-theoretic sense? Characterizing this structure could be a core mathematical contribution.
+- **Natural application domains:** Neuroscience (what stimuli does a neuron respond to?), ecology (what perturbations affect ecosystem stability?), machine learning (what input features does a model use? — saliency maps, feature attribution).
+
+---
+
+## Suggested Thesis Direction
+
+Characterizing complex systems by their sensitivity structure — the dual of symmetry — using tools from representation theory, information geometry, or topological data analysis. The most original thread is the idea that the **fluctuation-dissipation theorem might generalize to representation learning systems**, where the statistics of learned representations encode not just what the system *is* but how it *transforms*.
+
+# Prompt
+
+On your point about symmetry discovery: So are there methods of taking sets of data about some system and FINDING arbitrary invariants of that system? So say you could know the set of all possible transformations that the system could undergo. Can some algorithms or ML models discover some invariant? You mentioned that the symmetry group is always relative to the choice of what you care about. I completely agree. So I'm now asking if there are algorithms that FIND the thing to care about?
+
+# Notes
+
+## Notes: Discovering Invariants — Can Algorithms Find "The Thing to Care About"?
+
+## The Core Problem
+
+This is a harder problem than symmetry discovery given a known observable. The question is: given a dataset of system states (and possibly the transformations that produced them), can an algorithm discover *both* the invariant quantities *and* the symmetry group simultaneously, without being told what to look for? This requires the algorithm to discover the *natural carving* of the system — what are the meaningful quantities preserved under meaningful classes of transformations?
+
+---
+
+## Existing Approaches
+
+- **AI Physicist / AI Feynman (Tegmark, MIT):** Feed neural networks input-output data to discover symbolic expressions — conservation laws, equations of motion. A conserved quantity is an invariant under time evolution, so discovering conservation laws is a special case where the "transformation" is the system's own dynamics.
+
+- **Unsupervised symmetry discovery (Robin Winter, Sohyun Park, et al.):** The more directly relevant line of work. Given data, discover a set of transformations that leave some learned function invariant, where *both the transformations and the invariant function are learned simultaneously*.
+
+- **Topological data analysis:** Persistent homology identifies structural features of a dataset (holes, clusters, voids) invariant under continuous deformations. Not symmetry groups in the traditional sense, but discovered invariants characterizing the shape of data.
+
+- **Disentangled representation learning (β-VAEs):** Learn latent variables that independently capture distinct factors of variation. The invariant directions are those the representation collapses. These methods find invariants by identifying what *doesn't* matter for data reconstruction.
+
+---
+
+## The Deep Difficulty: Underdetermination
+
+Given any dataset, there are infinitely many functions invariant under infinitely many transformation sets. Some are trivial (constant functions — invariant under everything), some are accidental (preserved by coincidence for finite data), and some are "natural" or "physically meaningful." The algorithm needs a criterion to distinguish meaningful from spurious invariants, and **that criterion is doing the real theoretical work**.
+
+### Selection criteria used in practice (each is a prior / assumption):
+- **Simplicity / compressibility:** The invariant should have a short symbolic expression
+- **Generalization:** It should hold for unseen data, not just the training set
+- **Disentanglement:** It should correspond to an independent factor
+
+These priors essentially encode the physicist's taste, or more charitably, assumptions about the structure of physical law.
+
+---
+
+## Key Open Problems
+
+- **Degeneracy problem:** For a sphere under rotations, the radius, the radius cubed, and any arbitrary function of the radius are all O(3)-invariant. What selects the "right" invariant? Possibly minimality in some information-theoretic sense — the simplest function capturing all invariance structure. But how do you formalize "simplest"?
+
+- **Joint discovery / chicken-and-egg:** The invariant determines which transformations are symmetries, and the symmetry group determines which functions are invariants. These are dual to each other. Do successful methods break this circularity with alternating optimization (fix the invariant, find the group; fix the group, find the invariant; iterate)? Or do they find both simultaneously through a global objective?
+
+- **Role of dynamics and Noether's theorem:** The most important invariants in physics are those preserved by the *physical dynamics* (Noether's theorem connects Lagrangian symmetries to conservation laws). Restricting to invariants under time evolution, rather than arbitrary transformations, gives a natural selection criterion and connects to the Noether framework. This may make the problem better-posed.
+
+- **Representation-theoretic decomposition:** When a group acts on a space, the space decomposes into irreducible representations. Invariants are the trivial representation component. Framing the problem as "given data, discover the natural decomposition into irreducible representations of some unknown group" would be a precise mathematical formulation. The irreducible representations simultaneously tell you the symmetries and the natural basis of non-symmetric variation. Could algorithms jointly discover group structure and representation-theoretic decomposition from data, using an information-theoretic minimality criterion to break the degeneracy?
+
+- **Validation / what counts as success:** If an algorithm discovers a conserved quantity nobody has named, how do you know it's real versus a finite-data artifact? In physics, invariants are validated by making predictions — if this quantity is conserved, we should see X. Does the framework need a prediction-and-test loop, or is the discovery phase sufficient on its own?
+
+# Prompt
+
+These are great points that give me a lot to think about. One thing that may help guide the discussion is the following: LLMs encoders  look at a ton of natural language and find semantic meaning in it as they project it into a latent space. When they do this, these semantic equivalence classes on the natural language data are basically symmetries of the data. So, given a ton of natural language data that contains conversations of a person or population, an LLM encoder could discover the non-symmetries of that social system or person; it finds the thing they care about (we are working under the assumption that you talk about the things you care about, but just assume this. I know this is non-trivial, but really what I mean by "care" about something is not from strictly a psychology perspective, but rather a physics perspective: the only thing that matters is observables.). So, the LLM looks at data about the "states" of the person's thoughts (the natural language). From this, can it discover or derive the "universal set of non-symmetry transformations" that I referred to before. In other words, can you look at te enumerated states of a system, and derive its transformations. Please answer in the context of NLP, but also answer this last question for a simple physical state: the canonical ensemble. That is, can I look at the boltzmann distribution of a system in a reservoir and derive the ways that the system can transform (or even the microphysics?)
+
+# Notes
+
+## Notes: LLMs as Symmetry Discoverers & Deriving Transformations from States
+
+## LLM Encoders as Symmetry Discoverers
+
+When an LLM encoder maps text into a latent space, it learns equivalence classes — sentences that mean roughly the same thing get mapped to nearby points. These equivalence classes are the orbits of a symmetry action. The encoder learns a quotient space: the space of all possible token sequences modulo semantic equivalence. The latent dimensions that *do* vary meaningfully across equivalence classes are the "non-symmetry" directions — the degrees of freedom the system (language, or the person producing the language) actually cares about.
+
+If you feed an LLM a corpus of one person's writing/speech, the learned representation captures the *relevant axes of variation* for that person — the things they distinguish between, the categories they carve, the dimensions along which their mental state moves. Everything else (the enormous space of world-states that don't register in their language) gets collapsed. The LLM discovers non-symmetry structure by finding what varies meaningfully versus what doesn't.
+
+### Important subtlety: equivalence classes vs. transformations
+
+The LLM discovers the *equivalence classes that result from* symmetries, not the transformations directly. Knowing that states A and B are equivalent (related by a symmetry) is not the same as knowing *which transformation* maps A to B. Orbits give you the quotient structure, but they don't uniquely reconstruct the group — multiple different groups can produce the same orbit structure. So: **how much of the transformation structure can you recover from equivalence classes alone?**
+
+---
+
+## Can You Derive Transformations from States? The Inverse Problem
+
+### The canonical ensemble case
+
+System in thermal equilibrium with a reservoir at temperature T. Boltzmann distribution: p(s) = e^(-βE(s)) / Z. Question: given this distribution over microstates, can you recover the dynamics?
+
+**Short answer: no, not uniquely, but with remarkable constraints.**
+
+The Boltzmann distribution gives you the energy function E(s) up to an additive constant (relative energies are readable from relative probabilities). So you recover the Hamiltonian's energy landscape. But energy alone doesn't determine dynamics:
+
+- Different Hamiltonians can produce the same energy spectrum but different time evolution / trajectories through state space.
+- In classical mechanics, knowing V(x) determines forces and equations of motion, but only because you've assumed kinetic energy has the standard form p²/2m.
+- The Boltzmann distribution gives you H(p,q) in principle (microstates include momenta), but the equations of motion also require knowing the **symplectic structure** (the Poisson brackets), which is additional geometric information about phase space.
+
+**However:** If you know the Boltzmann distribution *and* assume the standard framework (Hamiltonian mechanics on a symplectic manifold with canonical Poisson brackets), you *can* recover the dynamics. The equilibrium distribution encodes the Hamiltonian, and the Hamiltonian generates the dynamics. **The answer depends on how much structural scaffolding you assume.**
+
+### Detailed balance constraint
+
+In thermal equilibrium, transition rates satisfy detailed balance: the rate from state i to j times p(i) equals the reverse rate times p(j). This constrains the dynamics enormously but doesn't determine them uniquely — infinitely many transition rate matrices are consistent with a given equilibrium distribution.
+
+### The fluctuation-dissipation connection
+
+**Key result:** The fluctuation-dissipation theorem says that the *response* of a system to a small perturbation (how it transforms under external influence) is determined by the *equilibrium fluctuations* (correlations between states in equilibrium). In a precise sense, **the statistics of states contain information about the transformations** — not the full microdynamics, but the linear response structure. You can determine how the system reacts to small pushes by observing how it spontaneously fluctuates.
+
+This is remarkably close to the LLM analogy: the fluctuation-dissipation theorem says watch the system's states long enough, measure their correlations, and you can predict how the system responds to perturbations you haven't applied. The LLM does something analogous — it observes correlations in a person's language (which states co-occur, which transitions are common) and infers the response structure: what the person cares about, how they'd react to new inputs.
+
+---
+
+## Hierarchy of What State Data Gives You
+
+The answer to "can states determine transformations?" follows a hierarchy:
+
+1. **Equilibrium state statistics** → the energy landscape
+2. **Temporal correlations** → linear response / first-order transformation structure (via fluctuation-dissipation)
+3. **Higher-order correlations** → increasingly detailed dynamical information
+4. **Full reconstruction of microdynamics** → may require framework assumptions (Hamiltonian mechanics, locality, etc.) that are themselves prior knowledge
+
+---
+
+## Unifying Question Across All Threads
+
+Given observational data about a system's states (microstate occupancy in stat mech, text corpora in NLP, collision data at CERN), **to what extent can you reconstruct the system's transformation structure** — its dynamics, symmetries, and sensitivities?
+
+---
+
+## Open Questions
+
+- **Formal FDT-LLM analogy:** In the LLM context, "fluctuations" are natural variation in a person's language; "dissipation" would be how they respond to novel inputs. Is there a formal analogy, or merely a metaphor? Can you define a quantity analogous to susceptibility or a response function for a language model's representation of a person?
+
+- **The reconstruction gap:** The Boltzmann distribution doesn't uniquely determine dynamics. Similarly, an LLM's representation doesn't uniquely determine how a person responds to truly novel (out-of-distribution) situations. Is this gap fundamental or an artifact of insufficient data? In physics, the gap is filled by assuming a framework (Hamiltonian mechanics). **What plays the role of that framework assumption in the NLP / complex-systems case?**
+
+- **Representation-theoretic connection:** The Boltzmann distribution decomposes into energy eigenstates. The LLM latent space decomposes into semantic dimensions. Is there a precise sense in which both perform a representation-theoretic decomposition, where "irreducible representations" correspond to independently varying physical quantities in one case and independently varying semantic features in the other?
+
+# Prompt
+
+Again, this is very helpful. I will return to this. I have another question in the meantime: In the most general terms, say I am given the distribution of microstates of some system. Am I able to reverse-engineer the system's potential from that? For example, I know that we model ideal gas in stat mech by using the particle in a box hamiltonian in QM. Can one look at the enumerated states and their probabilities of the ideal gas and derive this hamiltonian? Further, can this be done analytically or numerically for some arbitrary system and potential?
+
+# Notes
+
+# Notes: Reconstructing the Potential from Microstate Distributions
+
+## The Short Answer: Yes, In Principle
+
+Given the canonical ensemble distribution, for each microstate s: p(s) = e^(-βE(s)) / Z. If you know the probabilities and the temperature (thus β), you can invert:
+
+E(s) = -(1/β) ln(p(s)) - (1/β) ln(Z)
+
+The additive constant (involving Z) doesn't affect the physics (just a reference energy), so you recover the full energy spectrum. Every microstate's energy is determined by its occupation probability.
+
+For the ideal gas: microstates are single-particle quantum states of a particle in a box, with energies ∝ n². Plotting E versus state labels reveals the quadratic relationship, giving the spectrum of the infinite square well, from which you deduce V = 0 inside the box, V = ∞ outside.
+
+At the level of the energy spectrum, reconstruction is almost trivially achievable.
+
+---
+
+## Where It Gets Deeper: Spectrum ≠ Hamiltonian ≠ Potential
+
+These are related but distinct inverse problems, progressively harder.
+
+### Gap 1: Spectrum → Hamiltonian
+
+The energy spectrum gives eigenvalues of the Hamiltonian but not the eigenstates (wavefunctions). Different potentials can produce identical energy spectra — this is the **"Can you hear the shape of a drum?"** problem (Mark Kac, 1966). Answer: **no** — Gordon, Webb, and Wolpert (1992) demonstrated distinct geometric domains with exactly the same vibrational frequency spectrum. So the spectrum alone doesn't uniquely determine the potential in general.
+
+**In 1D quantum mechanics**, the situation is more favorable. Inverse spectral theory results show that for reasonable potentials on a line, the spectrum *plus additional data* (norming constants of eigenfunctions, or the spectral measure) uniquely determines the potential. The key mathematical machinery: the **Gel'fand-Levitan equation** and the **Marchenko equation** — explicit integral equations whose solutions reconstruct the potential from spectral data. So in 1D, it's analytically tractable with sufficient input data.
+
+**In higher dimensions**, the problem is severely underdetermined from the spectrum alone. You generally need additional information — scattering data, boundary behavior, or knowledge of the eigenfunctions themselves.
+
+### Gap 2: What the Boltzmann distribution actually provides vs. what you need
+
+The canonical ensemble gives probabilities of each microstate → each energy eigenvalue. But it does *not* directly give the quantum numbers or spatial structure of those states. You get a list of energies without the *labeling* of which energy corresponds to which spatial configuration. For the ideal gas this doesn't matter (states have a natural ordering), but for complicated interacting systems, the mapping between eigenvalues and physical structure of corresponding states is exactly the hard part.
+
+---
+
+## Numerical / Practical Methods for Arbitrary Systems
+
+### Classical systems: Boltzmann inversion
+
+If you have the distribution over phase space ρ(q, p) rather than just the energy spectrum, the situation is much better. In a classical canonical ensemble, ρ(q, p) ∝ exp(-β[p²/2m + V(q)]), so you factor out the kinetic (momentum) part and directly extract:
+
+V(q) = -(1/β) ln(ρ_config(q)) + const
+
+where ρ_config is the configurational part of the distribution. This is essentially **Boltzmann inversion** as used in computational chemistry — run a molecular dynamics simulation, histogram the configurations, and read off the effective potential (or potential of mean force) from the log of the probability density.
+
+### Quantum systems
+
+Numerical methods exist but are harder. Machine learning approaches have been used to solve inverse problems in quantum mechanics: given spectral data or scattering cross-sections, train a neural network to predict the potential. These work surprisingly well for simple systems but struggle with the non-uniqueness problem in higher dimensions.
+
+---
+
+## Open Questions
+
+- **Minimum data for reconstruction:** How much do you know *about* each microstate beyond its probability? If you know p(s) and the spatial structure of each state (wavefunction or particle configuration), reconstruction is essentially trivial. If you only know energies, you hit the "shape of the drum" problem. Precisely characterizing the **minimum data needed** to reconstruct the potential for different classes of systems could be a key contribution.
+
+- **Connection to earlier threads:** If language samples are "microstates" and their frequencies are "probabilities," then the log-probability landscape is an "energy landscape" over semantic space. Minima = the person's most probable states (default topics, habitual framings). Barriers between minima = how hard it is to shift between topics. Does this energy landscape metaphor give a concrete way to formalize the "non-symmetry structure"?
+
+- **The interacting case:** For an ideal gas, microstates are independent and the potential is trivial. For interacting systems, the potential contains all the interesting physics — correlations, phase transitions, emergent behavior. In the NLP analogy, an "ideal gas" would be a person whose thoughts are statistically independent (no correlations between topics) — obviously unrealistic. The correlations in language are the "interactions," and the potential reconstructed from language distribution encodes the structure of how thoughts connect. This is essentially what topic models and LLM representations capture, just not framed in statistical mechanical language. Formalizing this connection could be productive.
